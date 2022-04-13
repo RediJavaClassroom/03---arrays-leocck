@@ -1,36 +1,57 @@
 package com.redi.j2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        int[] arr1 = {0, 1, 2};
+        int[] arr2 = {3, 4, 5, 6, 7};
+
+        mergeArrays(arr1, arr2);
     }
 
     public static void printReversedArray(int[] array) {
-        List<Integer> list = IntStream.of(array).boxed().collect(Collectors.toList());
-        Collections.reverse(list);
-        System.out.println(list);
+
+        System.out.print("[");
+        for (int i = array.length-1; i >= 0; i--) {
+            System.out.print(array[i]);
+            if (i>0) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("]");
     }
 
     public static int[] mergeArrays(int[] array1, int[] array2) {
-        List<Integer> list1 = IntStream.of(array1).boxed().collect(Collectors.toList());
-        List<Integer> list2 = IntStream.of(array2).boxed().collect(Collectors.toList());
-        List<Integer> result = new ArrayList<>();
-        while(!list1.isEmpty() || !list2.isEmpty()) {
-            if(!list1.isEmpty()) {
-                result.add(list1.remove(0));
-            }
-            if(!list2.isEmpty()) {
-                result.add(list2.remove(0));
-            }
+
+        int[] result = new int[array1.length + array2.length];
+
+        // selecting the bigger array
+        int[] biggerArray;
+        int[] smallerArray;
+        if (array1.length > array2.length) {
+            biggerArray = array1;
+            smallerArray = array2;
         }
-        return result.stream().mapToInt(i -> i).toArray();
+        else {
+            biggerArray = array2;
+            smallerArray = array1;
+        }
+
+        int difference = biggerArray.length - smallerArray.length; // it can be zero
+
+        for(int i=0, j=0; j<smallerArray.length; i+=2, j++) {
+            result[i] = array1[j];
+            result[i+1] = array2[j];
+        }
+
+        for (int i=smallerArray.length*2, j=biggerArray.length-difference; j<biggerArray.length; i++, j++) {
+            result[i] = biggerArray[j];
+        }
+
+        return result;
     }
 
     public static int findFirstInArray(String[] texts, String search) {
@@ -58,10 +79,13 @@ public class Main {
         if(numbers.length == 1) {
             return numbers[0];
         }
-        List<Integer> list = IntStream.of(numbers).boxed().collect(Collectors.toList());
-        Collections.sort(list);
-        int result = list.get(0);
-        for (Integer i : list) {
+
+        int[] copiedArray = new int[numbers.length];
+        System.arraycopy(numbers, 0, copiedArray, 0, numbers.length);
+
+        Arrays.sort(copiedArray);
+        int result = copiedArray[0];
+        for (int i : copiedArray) {
             if (i > result) {
                 return i;
             }
